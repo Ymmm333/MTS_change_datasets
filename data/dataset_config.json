@@ -50,7 +50,9 @@
         "image_height": 1376,
         "bands_num": 176,
         "num_classes": 12,
-        "type": "mat"
+        "type": "mat",
+        "known_classes": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        "unknown_classes": []
     },
     "HyRank_target":{
         "path": "HyRANK",
@@ -62,7 +64,9 @@
         "image_height": 945,
         "bands_num": 176,
         "num_classes": 12,
-        "type": "mat"
+        "type": "mat",
+        "known_classes": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        "unknown_classes": []
     },
     "Yancheng_ZY": {
         "path": "Yancheng",
@@ -74,7 +78,9 @@
         "image_height": 942,
         "bands_num": 147,
         "num_classes": 7,
-        "type": "mat"
+        "type": "mat",
+        "known_classes": [1, 2, 3, 4, 5, 6, 7],
+        "unknown_classes": []
     },
     "Yancheng_GF": {
         "path": "Yancheng",
@@ -86,7 +92,9 @@
         "image_height": 585,
         "bands_num": 147,
         "num_classes": 7,
-        "type": "mat"
+        "type": "mat",
+        "known_classes": [1, 2, 3, 4, 5, 6, 7],
+        "unknown_classes": []
     },
 
     "Houston18_OS": {
@@ -111,7 +119,9 @@
         "image_height": 340,
         "bands_num": 103,
         "num_classes": 9,
-        "type": "mat"
+        "type": "mat",
+        "known_classes": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+        "unknown_classes": []
     },
     "Pavia_target": {
         "path": "Pavia",
@@ -123,6 +133,8 @@
         "image_height": 715,
         "bands_num": 102,
         "num_classes": 9,
-        "type": "mat"
+        "type": "mat",
+        "known_classes": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+        "unknown_classes": []
     }
 }

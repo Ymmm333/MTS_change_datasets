@@ -1,6 +1,4 @@
 import numpy as np
-import tensorflow as tf
-import tensorlayer as tl
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -8,6 +6,26 @@ from torch.autograd.variable import *
 import os
 from collections import Counter
 # import matplotlib.pyplot as plt
+
+# Make TensorFlow and TensorLayer imports optional
+TF_AVAILABLE = False
+try:
+    import tensorflow as tf
+    import tensorlayer as tl
+    TF_AVAILABLE = True
+except ImportError:
+    # Create dummy classes when TensorFlow/TensorLayer are not available
+    print("WARNING: TensorFlow/TensorLayer not available. TensorBoard logging will be disabled.")
+    class DummyTLFiles:
+        @staticmethod
+        def exists_or_mkdir(path):
+            os.makedirs(path, exist_ok=True)
+    
+    class DummyTL:
+        files = DummyTLFiles()
+    
+    tl = DummyTL()
+    tf = None
  
 
 class Accumulator(dict):
@@ -141,11 +159,17 @@ class Logger(object):
         if clear:
             os.system('rm %s -r'%log_dir)
         tl.files.exists_or_mkdir(log_dir)
-        self.writer = tf.summary.FileWriter(log_dir)
+        if TF_AVAILABLE:
+            self.writer = tf.summary.FileWriter(log_dir)
+        else:
+            self.writer = None
+            print(f"WARNING: TensorBoard logging disabled. Log directory: {log_dir}")
         self.step = 0
         self.log_dir = log_dir
 
     def log_scalar(self, tag, value, step = None):
+        if not TF_AVAILABLE or self.writer is None:
+            return
         if not step:
             step = self.step
         summary = tf.Summary(value = [tf.Summary.Value(tag = tag,
@@ -179,6 +203,8 @@ class Logger(object):
     #     self.writer.flush()
 
     def log_histogram(self, tag, values, step = None, bins = 1000):
+        if not TF_AVAILABLE or self.writer is None:
+            return
         if not step:
             step = self.step
         values = np.array(values)
@@ -199,6 +225,8 @@ class Logger(object):
         self.writer.flush()
 
     def log_bar(self, tag, values, xs = None, step = None):
+        if not TF_AVAILABLE or self.writer is None:
+            return
         if not step:
             step = self.step
 

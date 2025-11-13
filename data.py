@@ -1,19 +1,31 @@
 import os
 import numpy as np
-import tensorpack
 import time
 import random
 import numbers
-from scipy.misc import imread, imresize
-import tensorlayer as tl
+from PIL import Image
 from six.moves import cPickle
 from utilities import * 
 
 import warnings
 warnings.filterwarnings('ignore', message='.*', category=Warning)
 
+# Make tensorpack and tensorlayer imports optional
+TENSORPACK_AVAILABLE = False
+try:
+    import tensorpack
+    import tensorlayer as tl
+    TENSORPACK_AVAILABLE = True
+except ImportError:
+    print("WARNING: tensorpack/tensorlayer not available. Using simple data loader fallback.")
+    tensorpack = None
+    tl = None
+
 class CustomDataLoader(object):
     def __init__(self, dataset, batch_size, num_threads=8,remainder=None):
+        if not TENSORPACK_AVAILABLE:
+            raise ImportError("tensorpack is required for CustomDataLoader but is not available")
+        
         self.ds0 = dataset
         self.batch_size = batch_size
         self.num_threads = num_threads
@@ -38,7 +50,15 @@ class CustomDataLoader(object):
     def generator(self):
         return self.ds2.get_data()
 
-class BaseDataset(tensorpack.dataflow.RNGDataFlow):
+# Create base class conditionally
+if TENSORPACK_AVAILABLE:
+    _BaseDatasetParent = tensorpack.dataflow.RNGDataFlow
+else:
+    # Simple fallback parent class when tensorpack is not available
+    class _BaseDatasetParent:
+        pass
+
+class BaseDataset(_BaseDatasetParent):
     def __init__(self, is_train=True, skip_pred=None, transform=None, sample_weight=None):
         self.is_train = is_train
         self.skip_pred = skip_pred or (lambda data, label, is_train : False)
@@ -90,9 +110,9 @@ class BaseImageDataset(BaseDataset):
         super(BaseImageDataset, self).__init__(is_train, skip_pred, transform, sample_weight=sample_weight)
 
     def _get_one_data(self, data, label):
-        im = imread(data, mode='RGB')
+        im = np.array(Image.open(data).convert('RGB'))
         if self.imsize:
-            im = imresize(im, (self.imsize, self.imsize))
+            im = np.array(Image.fromarray(im).resize((self.imsize, self.imsize), Image.BILINEAR))
         return im, label
 
 

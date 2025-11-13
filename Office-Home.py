@@ -21,7 +21,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.autograd import Variable
-from scipy.misc import imresize
+from PIL import Image
 
 def skip(data, label, is_train):
     return False
@@ -39,7 +39,7 @@ loss_MSE_value = float(sys.argv[5])
 three_domain_loss_value = float(sys.argv[6])
 
 # 加载数据集配置
-with open('dataset_config.json', 'r') as f:
+with open('data/dataset_config.json', 'r') as f:
     dataset_config = json.load(f)
 
 log = Logger(store_name + '/step_2', clear=True)
@@ -160,7 +160,7 @@ class HyperspectralDataLoader:
         patch_rgb = self.hyperspectral_to_rgb(patch)
 
         # 调整大小到224x224
-        patch_rgb = imresize(patch_rgb, (224, 224))
+        patch_rgb = np.array(Image.fromarray((patch_rgb * 255).astype(np.uint8)).resize((224, 224), Image.BILINEAR)).astype(np.float32) / 255.0
 
         # 数据增强：随机水平翻转
         if is_train and np.random.random() > 0.5:
