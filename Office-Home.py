@@ -39,7 +39,7 @@ loss_MSE_value = float(sys.argv[5])
 three_domain_loss_value = float(sys.argv[6])
 
 # 加载数据集配置
-with open('dataset_config.json', 'r') as f:
+with open('data/dataset_config.json', 'r') as f:
     dataset_config = json.load(f)
 
 log = Logger(store_name + '/step_2', clear=True)
