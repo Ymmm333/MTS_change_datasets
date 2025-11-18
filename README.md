@@ -7,13 +7,23 @@ Code release for Mind the Gap: Open Set Domain Adaptation via Mutual-to-Separate
 
 ## Requirements 
 
-- python 3.6
-- PyTorch 1.1.0
-- torchvision 0.3.0
-- Tensorflow 1.9.0 
-- Tensorlayer 1.11
-- Tensorboard 
-- tensorpack
+- python 3.8+
+- PyTorch 1.1.0+
+- torchvision 0.3.0+
+- scipy
+- numpy
+- PIL/Pillow
+- scikit-learn
+
+### Optional (for TensorBoard logging):
+- TensorFlow 1.9.0+ (or 2.x)
+- Tensorlayer 1.11+
+- Tensorpack
+
+**Note**: TensorFlow is disabled by default to avoid GPU memory conflicts. To enable TensorBoard logging:
+```bash
+USE_TENSORFLOW=1 python Office-Home.py ...
+```
 
 ## GPU Version
 
@@ -22,8 +32,26 @@ Code release for Mind the Gap: Open Set Domain Adaptation via Mutual-to-Separate
 ## Training
 
 - Download datasets
-- Train: `python Office_Home.py  "Art"   "Clipart" "0" "A_C" 0.2 0.2`
-- Description: PyTorch Open-set OFFICE-HOME Training with ResNet50 (PRE-TRAINED WITH IMAGENET).
+- Train: `python Office-Home.py PaviaU_7gt PaviaC_OS 0 experiment_name 1.0 1.0`
+- Description: PyTorch Open-set domain adaptation training with ResNet50 (PRE-TRAINED WITH IMAGENET).
+
+### Default behavior (TensorFlow disabled):
+```bash
+$ python Office-Home.py PaviaU_7gt PaviaC_OS 0 experiment_name 1.0 1.0
+✓ TensorFlow disabled (logging disabled). Set USE_TENSORFLOW=1 to enable.
+gpu(s) to be used: 0
+domain_train PaviaU_7gt
+domain_test PaviaC_OS
+Logger initialized at experiment_name/step_2 (TensorBoard logging disabled)
+# Training proceeds normally without CUDA OOM errors
+```
+
+### Optional: Enable TensorFlow for logging:
+```bash
+$ USE_TENSORFLOW=1 python Office-Home.py PaviaU_7gt PaviaC_OS 0 experiment_name 1.0 1.0
+✓ TensorFlow enabled for TensorBoard logging
+# TensorBoard logging will work
+```
 
 
 ## Reference codes
