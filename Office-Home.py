@@ -23,6 +23,28 @@ import torch.optim as optim
 from torch.autograd import Variable
 from PIL import Image
 
+# Configure TensorFlow GPU memory growth to prevent OOM errors
+# This must be set before TensorFlow initializes any GPU devices
+try:
+    import tensorflow as tf
+    gpus = tf.config.experimental.list_physical_devices('GPU')
+    if gpus:
+        try:
+            # Enable memory growth for all GPUs
+            # This allows TensorFlow to allocate GPU memory incrementally as needed
+            # instead of allocating all available memory at startup
+            for gpu in gpus:
+                tf.config.experimental.set_memory_growth(gpu, True)
+            print(f"✓ TensorFlow memory growth enabled for {len(gpus)} GPU(s)")
+        except RuntimeError as e:
+            # Memory growth must be set before GPUs have been initialized
+            print(f"⚠ Warning: Could not set TensorFlow memory growth: {e}")
+except ImportError:
+    # TensorFlow not available - this is fine, code works without it
+    print("TensorFlow not available, skipping GPU memory config")
+except Exception as e:
+    print(f"⚠ Warning: Error configuring TensorFlow GPU: {e}")
+
 def skip(data, label, is_train):
     return False
 
