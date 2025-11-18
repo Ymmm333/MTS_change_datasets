@@ -7,15 +7,25 @@ import os
 from collections import Counter
 # import matplotlib.pyplot as plt
 
-# Make TensorFlow and TensorLayer imports optional
+# Disable TensorFlow by default to avoid GPU memory issues
+# Users can set environment variable USE_TENSORFLOW=1 to enable it
 TF_AVAILABLE = False
-try:
-    import tensorflow as tf
-    import tensorlayer as tl
-    TF_AVAILABLE = True
-except ImportError:
-    # Create dummy classes when TensorFlow/TensorLayer are not available
-    print("WARNING: TensorFlow/TensorLayer not available. TensorBoard logging will be disabled.")
+USE_TF = os.environ.get('USE_TENSORFLOW', '0') == '1'
+
+if USE_TF:
+    try:
+        import tensorflow as tf
+        import tensorlayer as tl
+        TF_AVAILABLE = True
+        print("✓ TensorFlow enabled for TensorBoard logging")
+    except ImportError:
+        TF_AVAILABLE = False
+        print("⚠ TensorFlow not available. Logging will be disabled.")
+else:
+    print("✓ TensorFlow disabled (logging disabled). Set USE_TENSORFLOW=1 to enable.")
+
+# Create dummy classes when TensorFlow is not available
+if not TF_AVAILABLE:
     class DummyTLFiles:
         @staticmethod
         def exists_or_mkdir(path):
@@ -161,9 +171,10 @@ class Logger(object):
         tl.files.exists_or_mkdir(log_dir)
         if TF_AVAILABLE:
             self.writer = tf.summary.FileWriter(log_dir)
+            print(f"Logger initialized at {log_dir} (TensorBoard logging enabled)")
         else:
             self.writer = None
-            print(f"WARNING: TensorBoard logging disabled. Log directory: {log_dir}")
+            print(f"Logger initialized at {log_dir} (TensorBoard logging disabled)")
         self.step = 0
         self.log_dir = log_dir
 

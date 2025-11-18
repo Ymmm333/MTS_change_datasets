@@ -5,21 +5,23 @@ import random
 import numbers
 from PIL import Image
 from six.moves import cPickle
-from utilities import * 
 
-import warnings
-warnings.filterwarnings('ignore', message='.*', category=Warning)
-
-# Make tensorpack and tensorlayer imports optional
-TENSORPACK_AVAILABLE = False
+# Try to import tensorpack and tensorlayer (optional)
 try:
     import tensorpack
     import tensorlayer as tl
     TENSORPACK_AVAILABLE = True
 except ImportError:
-    print("WARNING: tensorpack/tensorlayer not available. Using simple data loader fallback.")
+    TENSORPACK_AVAILABLE = False
+    print("⚠ TensorPack/TensorLayer not available. Using simple data loading.")
     tensorpack = None
     tl = None
+
+# Import utilities AFTER trying tensorpack
+from utilities import *
+
+import warnings
+warnings.filterwarnings('ignore', message='.*', category=Warning)
 
 class CustomDataLoader(object):
     def __init__(self, dataset, batch_size, num_threads=8,remainder=None):
